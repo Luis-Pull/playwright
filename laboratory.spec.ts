@@ -28,15 +28,12 @@ test('test', async ({ page }) => {
   await page.locator('[id="9"]').fill('1000');
   await page.locator('button[name="save-button"]').click();
   await page.locator('#app a').filter({ hasText: /^Inventory$/ }).click();
-  const firstInventoryRow = page.locator('.ag-center-cols-container .ag-row').first();
   const firstInventoryCheckbox = page
     .locator('.ag-pinned-left-cols-container .ag-selection-checkbox input.ag-checkbox-input')
     .first();
   await firstInventoryCheckbox.check();
-  await firstInventoryRow.click({
-    button: 'right'
-  });
-  await page.locator('#popover-main').getByText('Move out of quarantine', { exact: true }).click();
+  await page.getByRole('button', { name: 'Batch actions (1)' }).click();
+  await page.locator('#popover-main').getByText('Move out of quarantine').click();
   await page.getByRole('textbox', { name: 'Note' }).click();
   await page.getByRole('textbox', { name: 'Note' }).fill('sadf');
   await page.locator('button[name="save-button"]').click();
@@ -44,7 +41,10 @@ test('test', async ({ page }) => {
   await page.locator('#popover-main').getByText('Extract').click();
   await page.getByRole('textbox', { name: 'Select method' }).click();
   await page.locator('div').filter({ hasText: /^Hydrocarbon$/ }).nth(1).click();
-  await page.getByRole('checkbox', { name: 'Press Space to toggle row' }).check();
+  const firstInventoryCheckbox2 = page
+    .locator('.ag-pinned-left-cols-container .ag-selection-checkbox input.ag-checkbox-input')
+    .first();
+  await firstInventoryCheckbox2.check();
   await page.getByRole('textbox', { name: 'Qty' }).click();
   await page.getByRole('textbox', { name: 'Qty' }).dblclick();
   await page.getByRole('textbox', { name: 'Qty' }).fill('500');
@@ -54,9 +54,23 @@ test('test', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Select reason' }).click();
   await page.getByText('Spillage During Processing').click();
   await page.locator('#Next').click();
-  await page.locator('.flex.items-center.justify-center.rounded-md').click();
-  await page.getByLabel('', { exact: true }).check();
-  await page.getByRole('row', { name: 'crude' }).locator('#checkbox').check();
+  // await expect(page.locator('.has-container')).toBeHidden();
+  // await expect(page.locator('.global-table')).toBeVisible();
+const checkbox = page
+  .getByRole('row', { name: 'Eden Labs Hi-Flo FX2' })
+  .getByRole('checkbox');
+
+await checkbox.scrollIntoViewIfNeeded();
+await expect(checkbox).toBeVisible();
+await checkbox.click();
+
+const row = page.getByRole('row', { name: 'crude' });
+const checkbox2 = row.getByRole('checkbox');
+
+await checkbox2.scrollIntoViewIfNeeded();
+await checkbox2.click();
+
+
   await page.getByRole('button', { name: 'Next' }).click();
   await page.getByRole('textbox', { name: 'Qty' }).click();
   await page.getByRole('textbox', { name: 'Qty' }).fill('480');
